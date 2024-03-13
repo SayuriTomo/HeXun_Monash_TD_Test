@@ -18,17 +18,18 @@ public:
 	virtual void BeginPlay() override;
 	
 	virtual void Tick(float DeltaSeconds) override;
-
-	void ProcessGameStage();
-
+	
 	bool CheckForWin();
 
-	void EndMatch();
-	
-	void GenerateAIDecision();
+	bool CheckForDraw();
+
+	void ResetGame();
 	
 	int BoardSize = 3;
 	ECellState WinnerPlayer;
+	
+private:
+	UPROPERTY()ATicTacToeGameState* TTTGameState;
 };
 
 

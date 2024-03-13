@@ -15,34 +15,30 @@ AHeXun_Monash_TDGameMode::AHeXun_Monash_TDGameMode()
 	}
 
 	GameStateClass = ATicTacToeGameState::StaticClass();
+	
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void AHeXun_Monash_TDGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	ATicTacToeGameState* TTTGameState = GetGameState<ATicTacToeGameState>();
-	TTTGameState->bIsPlayerFirst = FMath::RandBool();
-	if(TTTGameState->bIsPlayerFirst)
-	{
-		TTTGameState->bIsPlayerTurn = true;
-	}
-	WinnerPlayer = ECellState::Empty;
+
+	TTTGameState = GetGameState<ATicTacToeGameState>();
+	ResetGame();
 }
 
 void AHeXun_Monash_TDGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	ProcessGameStage();
-}
-
-void AHeXun_Monash_TDGameMode::ProcessGameStage()
-{
-	
+	if(CheckForWin()||CheckForDraw())
+	{
+		TTTGameState->bIsEnd = true;
+	}
 }
 
 bool AHeXun_Monash_TDGameMode::CheckForWin()
 {
-	TArray<ECellState> BoardState = GetGameState<ATicTacToeGameState>()->BoardState;
+	TArray<ECellState> BoardState = TTTGameState->BoardState;
 	for (int Row = 0; Row < BoardSize; ++Row)
 	{
 		int StartIndex = Row * BoardSize;
@@ -81,21 +77,40 @@ bool AHeXun_Monash_TDGameMode::CheckForWin()
 		WinnerPlayer = BoardState[2];
 		return true;
 	}
-
+	
 	return false;
 }
 
-void AHeXun_Monash_TDGameMode::EndMatch()
+bool AHeXun_Monash_TDGameMode::CheckForDraw()
 {
-	
+	TArray<ECellState> BoardState = TTTGameState->BoardState;
+	for(ECellState CellState:BoardState)
+	{
+		if(CellState==ECellState::Empty)
+		{
+			return false;
+		}
+	}
+	WinnerPlayer = ECellState::Empty;
+	return true;
 }
 
-void AHeXun_Monash_TDGameMode::GenerateAIDecision()
+void AHeXun_Monash_TDGameMode::ResetGame()
 {
-	ATicTacToeGameState* TTTGameState = GetGameState<ATicTacToeGameState>();
-	TArray<ECellState> BoardState = TTTGameState->BoardState;
-	BoardState[0] = ECellState::Cross;
-	TTTGameState -> bIsPlayerTurn = true;
-	
+	TTTGameState->ResetBoard();
+	TTTGameState->bIsEnd = false;
+	TTTGameState->bIsPlayerFirst = FMath::RandBool();
+	if(TTTGameState->bIsPlayerFirst)
+	{
+		TTTGameState->bIsPlayerTurn = true;
+	}
+	else
+	{
+		TTTGameState->bIsPlayerTurn = false;
+		TTTGameState->StartDelayAI(2.0f);
+	}
+	WinnerPlayer = ECellState::None;
 }
+
+
 

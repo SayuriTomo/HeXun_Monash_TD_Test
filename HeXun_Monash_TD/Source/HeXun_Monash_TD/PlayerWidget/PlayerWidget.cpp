@@ -3,9 +3,6 @@
 
 #include "PlayerWidget.h"
 
-#include "HeXun_Monash_TD/HeXun_Monash_TDGameMode.h"
-#include "HeXun_Monash_TD/TicTacToeGameState/TicTacToeGameState.h"
-
 void UPlayerWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -18,17 +15,40 @@ void UPlayerWidget::NativeConstruct()
 	CellBlocks.Add(Cell7);
 	CellBlocks.Add(Cell8);
 	CellBlocks.Add(Cell9);
+
+	TTTGameState = GetWorld()->GetGameState<ATicTacToeGameState>();
+	TTTGameMode = GetWorld()->GetAuthGameMode<AHeXun_Monash_TDGameMode>();
 	
 }
 
 void UPlayerWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	UpdateTurn();
+	UpdateCell();
+	UpdateWinner();
 	
-	ATicTacToeGameState* TicTacToeGameState = GetWorld()->GetGameState<ATicTacToeGameState>();
-	if(TicTacToeGameState)
+}
+
+void UPlayerWidget::ChangeColor(int Index)
+{
+	if(TTTGameMode && TTTGameState && !TTTGameState->bIsEnd &&
+		TTTGameState->bIsPlayerTurn &&
+		TTTGameState->BoardState[Index] == ECellState::Empty)
 	{
-		if(TicTacToeGameState->bIsPlayerTurn)
+		TTTGameState->BoardState[Index] = ECellState::Circle;
+		
+		TTTGameState->bIsPlayerTurn = false;
+		TTTGameState->StartDelayAI(2.0f);
+	}
+}
+
+void UPlayerWidget::UpdateTurn()
+{
+	if(TTTGameState)
+	{
+		if(TTTGameState->bIsPlayerTurn)
 		{
 			CurrentTurn->SetText(FText::FromString("Player Turn"));
 		}
@@ -37,47 +57,10 @@ void UPlayerWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 			CurrentTurn->SetText(FText::FromString("AI Turn"));
 		}
 	}
-
-	UpdateCell();
-	
-}
-
-void UPlayerWidget::ChangeColor(int Index)
-{
-	ATicTacToeGameState* TTTGameState = GetWorld()->GetGameState<ATicTacToeGameState>();
-	AHeXun_Monash_TDGameMode* TTTGameMode = GetWorld()->GetAuthGameMode<AHeXun_Monash_TDGameMode>();
-	
-	if(TTTGameMode && TTTGameState &&
-		TTTGameState->bIsPlayerTurn &&
-		TTTGameState->BoardState[Index] == ECellState::Empty)
-	{
-		TTTGameState->BoardState[Index] = ECellState::Circle;
-
-		if(TTTGameMode->CheckForWin())
-		{
-			switch (TTTGameMode->WinnerPlayer)
-			{
-				case ECellState::Circle:
-					Winner->SetText(FText::FromString("Player Win"));
-					break;
-				
-				case ECellState::Cross:
-					Winner->SetText(FText::FromString("AI Win"));
-					break;
-				
-				default:break;
-			}
-		}
-
-		TTTGameState->bIsPlayerTurn = false;
-		TTTGameMode->GenerateAIDecision();
-	}
 }
 
 void UPlayerWidget::UpdateCell()
 {
-	ATicTacToeGameState* TTTGameState = GetWorld()->GetGameState<ATicTacToeGameState>();
-	
 	for(int i=0; i<TTTGameState->BoardState.Num(); i++)
 	{
 		switch (TTTGameState->BoardState[i])
@@ -97,7 +80,36 @@ void UPlayerWidget::UpdateCell()
 			default:
 				break;
 		}
-
 	}
+}
+
+void UPlayerWidget::UpdateWinner()
+{
+	switch (TTTGameMode->WinnerPlayer)
+	{
+		case ECellState::Circle:
+			Winner->SetText(FText::FromString("Player Win"));
+			break;
+
+		case ECellState::Cross:
+			Winner->SetText(FText::FromString("AI Win"));
+			break;
+		
+		case ECellState::Empty:
+			Winner->SetText(FText::FromString("Draw"));
+			break;
+		
+		case ECellState::None:
+			Winner->SetText(FText::FromString("None"));
+			break;
+				
+		default:
+			break;
+	}
+}
+
+void UPlayerWidget::ResetGame()
+{
+	TTTGameMode->ResetGame();
 }
 

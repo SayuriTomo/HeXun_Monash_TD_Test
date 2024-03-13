@@ -11,7 +11,8 @@ enum class ECellState : uint8
 {
 	Empty,
 	Cross,
-	Circle
+	Circle,
+	None
 };
 
 /**
@@ -36,6 +37,12 @@ public:
 
 	bool bIsPlayerFirst;
 	bool bIsPlayerTurn;
+	bool bIsEnd;
+
+	void GenerateAIDecision();
+
+	void StartDelayAI(float DelayTime);
+	FTimerHandle DelayTimerHandle;
 
 	
 

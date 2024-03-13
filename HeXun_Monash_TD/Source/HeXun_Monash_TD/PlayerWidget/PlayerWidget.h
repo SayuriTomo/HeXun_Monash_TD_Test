@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/TextBlock.h"
+#include "HeXun_Monash_TD/HeXun_Monash_TDGameMode.h"
+#include "HeXun_Monash_TD/TicTacToeGameState/TicTacToeGameState.h"
 #include "PlayerWidget.generated.h"
 
 /**
@@ -14,6 +16,7 @@ UCLASS()
 class HEXUN_MONASH_TD_API UPlayerWidget : public UUserWidget
 {
 	GENERATED_BODY()
+	
 public:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
@@ -22,6 +25,7 @@ public:
 	void ChangeColor(int Index);
 	
 	UPROPERTY(meta = (BindWidget))class UTextBlock* CurrentTurn;
+	void UpdateTurn();
 	
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))TArray<class UTextBlock*> CellBlocks;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))class UTextBlock* Cell1;
@@ -36,6 +40,14 @@ public:
 	void UpdateCell();
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))class UTextBlock* Winner;
+	void UpdateWinner();
+
+	UFUNCTION(BlueprintCallable)
+	void ResetGame();
+	
+private:
+	UPROPERTY()ATicTacToeGameState* TTTGameState;
+	UPROPERTY()AHeXun_Monash_TDGameMode* TTTGameMode;
 	
 	
 };
