@@ -30,22 +30,22 @@ void ATicTacToeGameState::GenerateAIDecision()
 {
 	if(!bIsEnd)
 	{
-		int best_score = INT_MIN;
-		int best_move = -1;
+		int BestScore = INT_MIN;
+		int BestMove = -1;
 
 		for (int i = 0; i < 9; ++i) {
 			if (BoardState[i] == ECellState::Empty) {
 				BoardState[i] = ECellState::Cross;
-				int score = Minimax(BoardState, false);
+				int Score = Minimax(BoardState, false);
 				BoardState[i] = ECellState::Empty;
 
-				if (score > best_score) {
-					best_score = score;
-					best_move = i;
+				if (Score > BestScore) {
+					BestScore = Score;
+					BestMove = i;
 				}
 			}
 		}
-		BoardState[best_move] = ECellState::Cross;
+		BoardState[BestMove] = ECellState::Cross;
 		bIsPlayerTurn = true;
 	}
 	
@@ -113,31 +113,31 @@ int ATicTacToeGameState::Evaluate(TArray<ECellState>& Board)
 
 int ATicTacToeGameState::Minimax(TArray<ECellState>& Board, bool bIsMax)
 {
-	int score = Evaluate(Board);
+	int Score = Evaluate(Board);
 	
-	if (score != 0||IsFull(Board))
-		return score;
+	if (Score != 0||IsFull(Board))
+		return Score;
 
 	if (bIsMax) {
-		int best_score = INT_MIN;
+		int BestScore = INT_MIN;
 		for (int i = 0; i < 9; i++) {
 			if (Board[i] == ECellState::Empty) {
 				Board[i] = ECellState::Cross;
-				best_score = FMath::Max(best_score, Minimax(Board, false));
+				BestScore = FMath::Max(BestScore, Minimax(Board, false));
 				Board[i] = ECellState::Empty;
 			}
 		}
-		return best_score;
+		return BestScore;
 	} else {
-		int best_score = INT_MAX;
+		int BestScore = INT_MAX;
 		for (int i = 0; i < 9; i++) {
 			if (Board[i] == ECellState::Empty) {
 				Board[i] = ECellState::Circle;
-				best_score = FMath::Min(best_score, Minimax(Board, true));
+				BestScore = FMath::Min(BestScore, Minimax(Board, true));
 				Board[i] = ECellState::Empty;
 			}
 		}
-		return best_score;
+		return BestScore;
 	}
 }
 
