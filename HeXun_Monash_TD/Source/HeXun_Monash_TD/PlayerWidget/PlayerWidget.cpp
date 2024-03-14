@@ -67,14 +67,17 @@ void UPlayerWidget::UpdateCell()
 		{
 			case ECellState::Empty:
 				CellBlocks[i]->SetText(FText::FromString("None"));
+				CellBlocks[i]->SetColorAndOpacity(FLinearColor::Black);
 				break;
 			
 			case ECellState::Cross:
 				CellBlocks[i]->SetText(FText::FromString("X"));
+				CellBlocks[i]->SetColorAndOpacity(FLinearColor::Red);
 				break;
 			
 			case ECellState::Circle:
 				CellBlocks[i]->SetText(FText::FromString("O"));
+				CellBlocks[i]->SetColorAndOpacity(FLinearColor::Blue);
 				break;
 			
 			default:

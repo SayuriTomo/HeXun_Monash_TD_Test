@@ -39,11 +39,17 @@ public:
 	bool bIsPlayerTurn;
 	bool bIsEnd;
 
-	void GenerateAIDecision();
-
 	void StartDelayAI(float DelayTime);
 	FTimerHandle DelayTimerHandle;
+	
+	void GenerateAIDecision();
+	
+	int Evaluate(TArray<ECellState>& Board);
 
+	int Minimax(TArray<ECellState>& Board, bool bIsMax);
+
+	bool IsFull(TArray<ECellState>& Board);
+	
 	
 
 	

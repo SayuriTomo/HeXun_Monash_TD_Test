@@ -107,7 +107,7 @@ void AHeXun_Monash_TDGameMode::ResetGame()
 	else
 	{
 		TTTGameState->bIsPlayerTurn = false;
-		TTTGameState->StartDelayAI(2.0f);
+		TTTGameState->StartDelayAI(4.0f);
 	}
 	WinnerPlayer = ECellState::None;
 }
